@@ -1,0 +1,12 @@
+# configs/birds_cyprus.yaml
+slug: birds_cyprus
+title: Birds of Cyprus
+taxon_common_name: birds
+
+source:
+  csv_pattern: "observations-birds-cyprus-{year}.csv"
+  csv_all_time: "observations-birds-cyprus.csv"
+  data_dir: "data"
+  project_id: 183301
+
+geojson_path: "data/cyprus.geojson"

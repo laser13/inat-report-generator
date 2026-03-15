@@ -1,0 +1,12 @@
+# configs/mammals_cyprus.yaml
+slug: mammals_cyprus
+title: Mammals of Cyprus
+taxon_common_name: mammals
+
+source:
+  csv_pattern: "observations-mammals-cyprus-{year}.csv"
+  csv_all_time: "observations-mammals-cyprus.csv"
+  data_dir: "data"
+  project_id: 228122
+
+geojson_path: "data/cyprus.geojson"

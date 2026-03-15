@@ -1,0 +1,12 @@
+# configs/biodiversity_cyprus.yaml
+slug: biodiversity_cyprus
+title: Biodiversity of Cyprus (Research Grade)
+taxon_common_name: species
+
+source:
+  csv_pattern: "observations-biodiversity-cyprus-{year}.csv"
+  csv_all_time: "observations-biodiversity-cyprus.csv"
+  data_dir: "data"
+  project_id: 275298
+
+geojson_path: "data/cyprus.geojson"
