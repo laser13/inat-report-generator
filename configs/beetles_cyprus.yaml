@@ -1,0 +1,24 @@
+# configs/beetles_cyprus.yaml
+slug: beetles_cyprus
+title: Beetles of Cyprus
+taxon_common_name: beetles
+
+source:
+  csv_pattern: "observations-beetles-cyprus-{year}.csv"
+  csv_all_time: "observations-beetles-cyprus.csv"
+  data_dir: "data"
+  # Main project covering all years. --year flag filters by date.
+  project_id: 198173
+
+report:
+  language: en
+  top_species_count: 20
+  top_observers_count: 10
+  include_map: true
+  include_charts: true
+
+geojson_path: "data/cyprus.geojson"
+
+# llm:
+#   model: gpt-5.4    # default from config.py, override here if needed
+#   language: en

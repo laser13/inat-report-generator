@@ -1,0 +1,163 @@
+<h1>{{ texts.title }}</h1>
+
+<p>{{ texts.lead }}</p>
+
+<h2>{{ year }} in Numbers</h2>
+<p>{{ texts.year_in_numbers_intro }}</p>
+<ul>
+  <li><b>Observations:</b> {{ summary.total_observations }}</li>
+  <li><b>Species:</b> {{ summary.total_species }}</li>
+  <li><b>Families:</b> {{ summary.total_families }}</li>
+  <li><b>Observers:</b> {{ summary.total_observers }}</li>
+  <li><b>Research Grade:</b> {{ summary.research_grade_pct }}%</li>
+  <li><b>Date range:</b> {{ summary.first_observation_date }} - {{ summary.last_observation_date }}</li>
+</ul>
+
+<h2>Outstanding Contributors</h2>
+<p>{{ texts.observers_text }}</p>
+<h3>Top Observers</h3>
+<table>
+{% for row in data.rich_observers[:10] %}
+{% if loop.index0 % 5 == 0 %}{% if not loop.first %}</tr>{% endif %}<tr>{% endif %}
+  <td style="padding: 8px; text-align: center;">
+    <a href="https://www.inaturalist.org/people/{{ row.login }}" target="_blank">
+      {% if row.icon_url %}<img src="{{ row.icon_url }}" style="border-radius: 50%; width: 48px; margin: 5px;"><br>{% endif %}
+      @{{ row.login }}
+    </a><br>
+    <b>{{ row.observations }}</b> observations<br>
+    {{ row.species }} species
+  </td>
+{% if loop.last %}</tr>{% endif %}
+{% endfor %}
+</table>
+
+<h2>Activity Through the Year</h2>
+<p>{{ texts.seasonal_text }}</p>
+<p><img src="charts/monthly_observations.png" alt="Monthly Observations"></p>
+<table>
+<thead><tr><th>Month</th><th>Observations</th><th>Species</th><th>Observers</th></tr></thead>
+<tbody>
+{% for row in data.monthly %}
+<tr><td>{{ month_names[row.month | int - 1] }}</td><td>{{ row.observations }}</td><td>{{ row.species }}</td><td>{{ row.observers }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+<h2>Species Richness</h2>
+<p><img src="charts/cumulative_species.png" alt="Cumulative Species Richness"></p>
+
+<h2>Biodiversity</h2>
+<p>{{ texts.biodiversity_text }}</p>
+<h3>Top Families</h3>
+<table>
+<thead><tr><th>#</th><th>Family</th><th>Observations</th><th>Species</th></tr></thead>
+<tbody>
+{% for row in data.top_families %}
+<tr><td>{{ loop.index }}</td><td>{{ row.family_name }}</td><td>{{ row.observations }}</td><td>{{ row.species }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+<h3>Top Species</h3>
+<p>{{ texts.top_species_text }}</p>
+<p><img src="charts/top_species.png" alt="Top Species"></p>
+<table>
+{% for row in data.rich_species[:20] %}
+{% if loop.index0 % 5 == 0 %}{% if not loop.first %}</tr>{% endif %}<tr>{% endif %}
+  <td style="padding: 8px; text-align: center;">
+    <a href="https://www.inaturalist.org/taxa/{{ row.taxon_id }}" target="_blank">
+      {% if row.square_url %}<img src="{{ row.square_url }}" style="border-radius: 5%; width: 80px; margin: 5px;"><br>{% endif %}
+      <i>{{ row.scientific_name }}</i>
+    </a><br>
+    <b>{{ row.count }}</b> observations
+  </td>
+{% if loop.last %}</tr>{% endif %}
+{% endfor %}
+</table>
+
+{% if data.new_species and texts.new_species_profiles %}
+<h2>Notable New Species</h2>
+<p>A total of <b>{{ data.new_species | length }}</b> species were recorded for the first time this year.</p>
+{% for profile in texts.new_species_profiles %}
+{% set obs_info = new_species_photos.get(profile.scientific_name, {}) %}
+<table><tr>
+{% if obs_info.get("photo_url") %}
+<td style="padding: 8px; vertical-align: top; width: 120px;">
+  <a href="https://www.inaturalist.org/observations/{{ obs_info.observation_id }}" target="_blank">
+    <img src="{{ obs_info.photo_url }}" style="border-radius: 5%; width: 100px;">
+  </a>
+</td>
+{% endif %}
+<td style="padding: 8px; vertical-align: top;">
+  <b><a href="https://www.inaturalist.org/taxa/{{ profile.scientific_name }}" target="_blank"><i>{{ profile.scientific_name }}</i></a></b>
+  {% if obs_info.get("observer_login") %}<br><small>Observed by <a href="https://www.inaturalist.org/people/{{ obs_info.observer_login }}" target="_blank">{{ obs_info.observer_login }}</a> on {{ obs_info.observed_on }}</small>{% endif %}
+  <br>{{ profile.description }}
+</td>
+</tr></table>
+{% endfor %}
+{% endif %}
+
+{% if data.rich_singletons %}
+<h2>Rare Sightings</h2>
+<p>{{ texts.rare_sightings_text }}</p>
+<table>
+{% for obs in data.rich_singletons[:15] %}
+{% if loop.index0 % 5 == 0 %}{% if not loop.first %}</tr>{% endif %}<tr>{% endif %}
+  <td style="padding: 8px; text-align: center;">
+    <a href="https://www.inaturalist.org/observations/{{ obs.observation_id }}" target="_blank">
+      {% if obs.photo_url %}<img src="{{ obs.photo_url }}" style="border-radius: 5%; width: 80px; margin: 5px;"><br>{% endif %}
+      <i>{{ obs.scientific_name }}</i>
+    </a><br>
+    by <a href="https://www.inaturalist.org/people/{{ obs.observer_login }}" target="_blank">{{ obs.observer_login }}</a><br>
+    {{ obs.observed_on }}
+  </td>
+{% if loop.last %}</tr>{% endif %}
+{% endfor %}
+</table>
+{% endif %}
+
+{% if data.district_stats %}
+<h2>Geographic Patterns</h2>
+<p>{{ texts.geography_text }}</p>
+<p><a href="maps/observations_map.html" target="_blank">Open interactive map</a></p>
+<table>
+<thead><tr><th>District</th><th>Observations</th><th>Species</th></tr></thead>
+<tbody>
+{% for row in data.district_stats %}
+<tr><td>{{ row.district }}</td><td>{{ row.observations }}</td><td>{{ row.species }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+{% if data.rich_identifiers %}
+<h2>Thanks to Identifiers</h2>
+<p>{{ texts.identifiers_text }}</p>
+<table>
+{% for row in data.rich_identifiers[:10] %}
+{% if loop.index0 % 5 == 0 %}{% if not loop.first %}</tr>{% endif %}<tr>{% endif %}
+  <td style="padding: 8px; text-align: center;">
+    <a href="https://www.inaturalist.org/people/{{ row.login }}" target="_blank">
+      {% if row.icon_url %}<img src="{{ row.icon_url }}" style="border-radius: 50%; width: 48px; margin: 5px;"><br>{% endif %}
+      @{{ row.login }}
+    </a><br>
+    <b>{{ row.count }}</b> identifications
+  </td>
+{% if loop.last %}</tr>{% endif %}
+{% endfor %}
+</table>
+{% endif %}
+
+{% if texts.comparison_text %}
+<h2>Comparison with Previous Year</h2>
+<p>{{ texts.comparison_text }}</p>
+{% endif %}
+
+<h2>Limitations</h2>
+<p>{{ texts.limitations_text }}</p>
+
+<h2>Conclusion</h2>
+<p>{{ texts.conclusion }}</p>
+
+<hr>
+<p><small>Generated by inat-report. Data from <a href="https://www.inaturalist.org" target="_blank">iNaturalist</a>.</small></p>

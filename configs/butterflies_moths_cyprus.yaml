@@ -1,0 +1,12 @@
+# configs/butterflies_moths_cyprus.yaml
+slug: butterflies_moths_cyprus
+title: Butterflies and Moths of Cyprus
+taxon_common_name: butterflies and moths
+
+source:
+  csv_pattern: "observations-butterflies-moths-cyprus-{year}.csv"
+  csv_all_time: "observations-butterflies-moths-cyprus.csv"
+  data_dir: "data"
+  project_id: 221789
+
+geojson_path: "data/cyprus.geojson"

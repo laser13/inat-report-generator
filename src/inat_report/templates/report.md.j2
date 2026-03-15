@@ -1,0 +1,143 @@
+# {{ title }} ({{ year }})
+
+## Highlights
+
+- **{{ summary.total_observations }}** observations of **{{ summary.total_species }}** species recorded by **{{ summary.total_observers }}** observers across **{{ summary.total_families }}** families.
+- **{{ summary.research_grade_pct }}%** of observations achieved Research Grade.
+- Peak activity in **{{ month_names[peak_month - 1] }}** with **{{ peak_observations }}** observations.
+- By mid-year (June), **{{ cumulative_end_pct }}%** of the total species had been discovered.
+
+---
+
+## Scope and Dataset
+
+This report covers observations from the project **{{ title }}** during the calendar year **{{ year }}**.
+
+- **Date range:** {{ summary.first_observation_date }} to {{ summary.last_observation_date }}
+- **Total observations:** {{ summary.total_observations }}
+- **Unique species:** {{ summary.total_species }}
+- **Contributing observers:** {{ summary.total_observers }}
+- **Taxonomic families:** {{ summary.total_families }}
+
+---
+
+## Activity Through the Year
+
+![Monthly observations chart](figures/monthly_observations.png)
+
+The following table summarizes monthly activity:
+
+| Month | Observations | Species | Observers |
+|-------|-------------|---------|-----------|
+{% for row in monthly.itertuples() -%}
+| {{ month_names[row.month - 1] }} | {{ row.observations }} | {{ row.species }} | {{ row.observers }} |
+{% endfor %}
+
+Peak activity occurred in **{{ month_names[peak_month - 1] }}** with **{{ peak_observations }}** observations.
+
+By the end of June, **{{ cumulative_end_pct }}%** of the year's total species had already been recorded, reflecting the seasonal patterns of observation activity.
+
+---
+
+## Species Richness
+
+![Cumulative species chart](figures/cumulative_species.png)
+
+### Top Species
+
+| # | Scientific Name | Common Name | Family | Observations |
+|---|----------------|-------------|--------|-------------|
+{% for row in top_species.itertuples() -%}
+| {{ loop.index }} | *{{ row.scientific_name }}* | {{ row.common_name if row.common_name else "—" }} | {{ row.family_name if row.family_name else "—" }} | {{ row.count }} |
+{% endfor %}
+
+### Top Families
+
+| # | Family | Observations | Species |
+|---|--------|-------------|---------|
+{% for row in top_families.itertuples() -%}
+| {{ loop.index }} | {{ row.family_name }} | {{ row.observations }} | {{ row.species }} |
+{% endfor %}
+
+### Singleton Species
+
+A total of **{{ singleton_count }}** species were observed only once during {{ year }}. These singletons may represent rare, elusive, or under-sampled taxa.
+
+---
+
+## Community Contribution
+
+### Top Observers
+
+| # | Observer | Name | Observations | Species |
+|---|----------|------|-------------|---------|
+{% for row in top_observers.itertuples() -%}
+| {{ loop.index }} | {{ row.user_login }} | {{ row.user_name if row.user_name else "—" }} | {{ row.observations }} | {{ row.species }} |
+{% endfor %}
+
+The top 5 observers contributed **{{ top5_obs_pct }}%** of all observations, indicating a {{ "highly concentrated" if top5_obs_pct > 50 else "moderately distributed" }} observer effort.
+
+---
+
+## Geographic Patterns
+
+{% if has_map -%}
+An interactive map of observations is available: [observation map](figures/map.html)
+{% endif %}
+
+{% if district_stats is not none and district_stats|length > 0 -%}
+### Observations by District
+
+| # | District | Observations | Species |
+|---|----------|-------------|---------|
+{% for row in district_stats.itertuples() -%}
+| {{ loop.index }} | {{ row.district }} | {{ row.observations }} | {{ row.species }} |
+{% endfor %}
+{% else -%}
+District-level data is not available for this dataset.
+{% endif %}
+
+---
+
+{% if comparison is not none -%}
+## Comparison with {{ comparison.previous_year }}
+
+| Metric | {{ comparison.previous_year }} | {{ comparison.current_year }} | Change |
+|--------|------|------|--------|
+| Observations | {{ comparison.observations_change.previous }} | {{ comparison.observations_change.current }} | {{ "%+d"|format(comparison.observations_change.diff) }} ({{ comparison.observations_change.pct_change }}%) |
+| Species | {{ comparison.species_change.previous }} | {{ comparison.species_change.current }} | {{ "%+d"|format(comparison.species_change.diff) }} ({{ comparison.species_change.pct_change }}%) |
+| Observers | {{ comparison.observers_change.previous }} | {{ comparison.observers_change.current }} | {{ "%+d"|format(comparison.observers_change.diff) }} ({{ comparison.observers_change.pct_change }}%) |
+
+- **New species in {{ comparison.current_year }}:** {{ comparison.new_species|length }} species not recorded in {{ comparison.previous_year }}.
+- **Species not re-recorded:** {{ comparison.lost_species|length }} species recorded in {{ comparison.previous_year }} were not observed in {{ comparison.current_year }}.
+- **Shared species:** {{ comparison.shared_species_count }} species were recorded in both years.
+
+---
+
+{% endif -%}
+
+## Data Quality
+
+- **Research Grade:** {{ summary.research_grade_pct }}% of observations.
+- **Needs ID:** {{ summary.needs_id_count }} observations still require identification.
+- **With coordinates:** {{ summary.with_coords_pct }}% of observations include geographic coordinates.
+
+---
+
+## Limitations
+
+The following limitations should be considered when interpreting this report:
+
+1. **Observer bias:** iNaturalist data reflect observer activity, not a systematic census. Areas with more active observers will appear to have higher biodiversity, while under-observed areas may be underrepresented.
+2. **Temporal bias:** Observation effort varies seasonally. Higher counts in spring and summer months may partly reflect increased observer activity rather than true abundance peaks.
+3. **Taxonomic bias:** Charismatic or easily identifiable species tend to be observed and reported more frequently. Cryptic, nocturnal, or microscopic species are likely underrepresented.
+4. **Spatial coverage:** Geographic patterns reflect where observers choose to go, not the actual distribution of species.
+5. **Identification accuracy:** While Research Grade observations require community consensus, misidentifications can still occur, especially for morphologically similar species.
+
+---
+
+## Citation
+
+Report generated on {{ generated_date }} using **inat-report** v{{ version }}.
+
+Data source: [iNaturalist](https://www.inaturalist.org/) observations exported for the project "{{ title }}" ({{ year }}).

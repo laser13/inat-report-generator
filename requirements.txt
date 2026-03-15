@@ -1,0 +1,9 @@
+pyinaturalist
+pyinaturalist-convert[all]
+pickleshare
+python-dotenv
+tabulate
+pandas
+altair
+vl-convert-python
+ipyplot
